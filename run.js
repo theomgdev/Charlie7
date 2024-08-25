@@ -82,20 +82,20 @@ function next(tokenTree, text, limit = 5) {
     return suggestions;
 }
 
-function complete(tokenTree, text, length = 100) {
+function complete(tokenTree, text, length = 100, limit = 5, random = true) {
     tokenTree = train(text, tokenTree, 1);
 
     debugLog("[START OF COMPLETION]");
     debugLog(text, true);
 
     for (let repeat = 0; repeat < length; repeat++) {
-        const nextTokens = next(tokenTree, text, 5);
+        const nextTokens = next(tokenTree, text, limit);
 
         if (nextTokens.length === 0) {
             break;
         }
-
-        const nextToken = nextTokens[Math.round(Math.random() * (nextTokens.length | 0))];
+        let selectIdx = random ? Math.round(Math.random() * (nextTokens.length | 0)) : 0;
+        const nextToken = nextTokens[selectIdx];
 
         debugLog(nextToken, true);
 
