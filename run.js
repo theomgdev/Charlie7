@@ -1,8 +1,6 @@
 const fs = require('fs');
 const debug = true;
 
-const context = 100; // -1 for unlimited context
-
 String.prototype.tokenize = function(len = 5) {
     return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
@@ -25,7 +23,7 @@ function debugProgressBar(current, total) {
     }
 }
 
-function train(text, tokenTree = {}) {
+function train(text, tokenTree = {}, context = 100) { // -1 for unlimited context
     let tokens = text.tokenize();
 
     for (let src = 0; src < tokens.length - 1; src++) {
@@ -113,7 +111,7 @@ function test() {
 
     console.log(next(tree, 'Well I don\'t want to talk about it', 5));
 
-    complete(tree, 'Well I don\'t want to talk about it', 100);
+    complete(tree, 'Well I don\'t want to talk about it', 100, 2);
 }
 
 test();
