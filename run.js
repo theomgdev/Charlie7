@@ -3,7 +3,7 @@ const debug = true;
 
 const context = 100; // -1 for unlimited context
 
-String.prototype.tokenize = function(len = 2) {
+String.prototype.tokenize = function(len = 5) {
     return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
 
@@ -14,6 +14,14 @@ function debugLog(message, inline = false) {
         } else {
             console.log(message);
         }
+    }
+}
+
+function debugProgressBar(current, total) {
+    if (debug) {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(`Progress: ${current}/${total} (${Math.round((current / total) * 100)}%)`);
     }
 }
 
@@ -39,6 +47,8 @@ function train(text, tokenTree = {}) {
             tokenTree[srcToken][dist][destToken] = tokenTree[srcToken][dist][destToken] || 0;
             tokenTree[srcToken][dist][destToken] += 0.000001;
         }
+
+        debugProgressBar(src, tokens.length - 1);
     }
 
     return tokenTree;
@@ -79,17 +89,17 @@ function complete(tokenTree, text, length = 100) {
     debugLog(text, true);
 
     for (let repeat = 0; repeat < length; repeat++) {
-        const nextTokens = next(tokenTree, text, 1);
+        const nextTokens = next(tokenTree, text, 5);
 
         if (nextTokens.length === 0) {
             break;
         }
 
-        const nextToken = nextTokens[0];
+        const nextToken = nextTokens[Math.random() * nextTokens.length | 0];
 
         debugLog(nextToken, true);
 
-        text = text + nextTokens[0];
+        text = text + nextToken;
     }
 
     debugLog("\n[END OF COMPLETION]");
@@ -101,9 +111,9 @@ function test() {
     let data = fs.readFileSync('ottoman_wikipedia.txt').toString();
     let tree = train(data);
 
-    console.log(next(tree, 'Osmanlı büyük ve güçlü bir devletti', 5));
+    console.log(next(tree, 'Well I don\'t want to talk about it', 5));
 
-    complete(tree, 'Osmanlı büyük ve güçlü bir devletti', 100);
+    complete(tree, 'Well I don\'t want to talk about it', 100);
 }
 
 test();
