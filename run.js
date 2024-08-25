@@ -168,7 +168,7 @@ class TextGenerator extends Charlie7 {
      * @returns {string} Generated text
      */
     generate(length = 100, random = false, limit = 5) {
-        let seed = (Math.random() + 1).toString(36).substring(this.tokenLength * 3);
+        let seed = (Math.random() + 1).toString(36).substring(this.tokenLength);
 
         return this.complete(seed, length, limit, random);
     }
