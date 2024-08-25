@@ -1,11 +1,9 @@
-// markov-chain-text-generator.js
-
 const fs = require('fs');
 
 /**
- * MarkovChain class for text generation using Markov Chain algorithm
+ * Charlie7 class for text generation using Unique Charlie7 algorithm
  */
-class MarkovChain {
+class Charlie7 {
     /**
      * @param {Object} options - Configuration options
      * @param {number} options.tokenLength - Length of each token
@@ -57,7 +55,7 @@ class MarkovChain {
     }
 
     /**
-     * Train the Markov Chain model
+     * Train the Unique Charlie7 model
      * @param {string} text - Input text for training
      */
     train(text) {
@@ -139,9 +137,9 @@ class MarkovChain {
 }
 
 /**
- * TextGenerator class that uses MarkovChain for text generation
+ * TextGenerator class that uses Charlie7 for text generation
  */
-class TextGenerator extends MarkovChain {
+class TextGenerator extends Charlie7 {
     /**
      * @param {Object} options - Configuration options
      */
@@ -193,4 +191,4 @@ function test() {
 
 test();
 
-module.exports = { MarkovChain, TextGenerator };
+module.exports = { Charlie7, TextGenerator };
