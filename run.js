@@ -3,7 +3,7 @@ const debug = true;
 
 const context = 100; // -1 for unlimited context
 
-String.prototype.tokenize = function(len = 5) {
+String.prototype.tokenize = function(len = 2) {
     return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
 
