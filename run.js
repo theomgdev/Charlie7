@@ -95,7 +95,7 @@ function complete(tokenTree, text, length = 100) {
             break;
         }
 
-        const nextToken = nextTokens[Math.random() * nextTokens.length | 0];
+        const nextToken = nextTokens[Math.round(Math.random() * (nextTokens.length | 0))];
 
         debugLog(nextToken, true);
 
