@@ -154,7 +154,7 @@ class TextGenerator extends MarkovChain {
      */
     loadAndTrain(path) {
         let data = fs.readFileSync(path, 'utf8');
-        
+
         try {
             this.train(data);
             console.log("Model trained successfully.");
@@ -185,8 +185,8 @@ function test() {
 
     generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
-    console.log(generator.next('turkey', 5));
-    console.log(generator.generate('turkey', 100));
+    console.log(generator.next('turkey'));
+    console.log(generator.generate('turkey'));
 }
 
 test();
