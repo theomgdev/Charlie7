@@ -93,10 +93,8 @@ function complete(tokenTree, text, length = 100) {
 }
 
 function test() {
-    let data = fs.readFileSync('movie_lines.txt').toString();
+    let data = fs.readFileSync('ottoman_wikipedia.txt').toString();
     let tree = train(data);
-
-    console.log(tree);
 
     console.log(next(tree, 'what', 5));
 
