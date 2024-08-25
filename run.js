@@ -81,8 +81,6 @@ function next(tokenTree, text, limit = 5) {
 }
 
 function complete(tokenTree, text, length = 100, limit = 5,  random = false) {
-    tokenTree = train(text, tokenTree, 1);
-
     debugLog("[START OF COMPLETION]");
     debugLog(text, true);
 
