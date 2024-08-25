@@ -164,14 +164,15 @@ class TextGenerator extends MarkovChain {
     }
 
     /**
-     * Generate text based on a prompt
-     * @param {string} prompt - Seed text to start generation
+     * Generate text based on a random seed
      * @param {number} length - Desired generation length
      * @param {boolean} random - Whether to use random selection
      * @returns {string} Generated text
      */
-    generate(prompt, length = 100, random = false) {
-        return this.complete(prompt, length, 5, random);
+    generate(length = 100, random = false, limit = 5) {
+        let seed = (Math.random() + 1).toString(36).substring(this.tokenLength * 3);
+
+        return this.complete(seed, length, limit, random);
     }
 }
 
@@ -186,7 +187,8 @@ function test() {
     generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
     console.log(generator.next('turkey'));
-    console.log(generator.generate('turkey'));
+    generator.complete('turkey', 100);
+    generator.generate();
 }
 
 test();
