@@ -1,7 +1,7 @@
 const fs = require('fs');
 const debug = true;
 
-String.prototype.tokenize = function(len = 3) {
+String.prototype.tokenize = function(len = 2) {
     return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
 
@@ -104,7 +104,7 @@ function complete(tokenTree, text, length = 100, limit = 5,  random = false) {
 }
 
 function test() {
-    let data = fs.readFileSync('ottoman_wikipedia.txt').toString();
+    let data = fs.readFileSync('DATA/ottoman_wikipedia.txt').toString();
     let tree = train(data);
 
     console.log(next(tree, 'Well I don\'t want to talk about it', 5));
