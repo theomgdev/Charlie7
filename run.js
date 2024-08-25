@@ -1,7 +1,7 @@
 const fs = require('fs');
 const debug = true;
 
-String.prototype.tokenize = function(len = 5) {
+String.prototype.tokenize = function(len = 3) {
     return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
 
@@ -67,7 +67,7 @@ function next(tokenTree, text, limit = 5) {
 
         for (const [destToken, prob] of Object.entries(tokenTree[srcToken][dist])) {
             suggestions[destToken] = suggestions[destToken] || 0;
-            suggestions[destToken] += prob / dist;
+            suggestions[destToken] = (suggestions[destToken] + prob) / 2;
         }
     }
 
@@ -80,7 +80,7 @@ function next(tokenTree, text, limit = 5) {
     return suggestions;
 }
 
-function complete(tokenTree, text, length = 100, limit = 5, random = true) {
+function complete(tokenTree, text, length = 100, limit = 5,  random = false) {
     tokenTree = train(text, tokenTree, 1);
 
     debugLog("[START OF COMPLETION]");
@@ -111,7 +111,7 @@ function test() {
 
     console.log(next(tree, 'Well I don\'t want to talk about it', 5));
 
-    complete(tree, 'Well I don\'t want to talk about it', 100, 2);
+    complete(tree, 'Well I don\'t want to talk about it', 100);
 }
 
 test();
