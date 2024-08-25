@@ -178,7 +178,7 @@ class TextGenerator extends Charlie7 {
 function test() {
     const generator = new TextGenerator({
         tokenLength: 2,
-        context: 25,
+        context: 10,
         debug: true
     });
 
