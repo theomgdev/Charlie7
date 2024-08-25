@@ -3,8 +3,8 @@ const debug = true;
 
 const context = 100; // -1 for unlimited context
 
-String.prototype.tokenize = function(len = 3) {
-    return this.toLowerCase().match(new RegExp(`.{1,${len}}`, 'g'));
+String.prototype.tokenize = function(len = 5) {
+    return this.match(new RegExp(`.{1,${len}}`, 'g'));
 }
 
 function debugLog(message, inline = false) {
@@ -59,7 +59,7 @@ function next(tokenTree, text, limit = 5) {
 
         for (const [destToken, prob] of Object.entries(tokenTree[srcToken][dist])) {
             suggestions[destToken] = suggestions[destToken] || 0;
-            suggestions[destToken] += prob;
+            suggestions[destToken] += prob / dist;
         }
     }
 
@@ -101,9 +101,9 @@ function test() {
     let data = fs.readFileSync('ottoman_wikipedia.txt').toString();
     let tree = train(data);
 
-    console.log(next(tree, 'what', 5));
+    console.log(next(tree, 'Osmanlı büyük ve güçlü bir devletti', 5));
 
-    complete(tree, 'well what', 100);
+    complete(tree, 'Osmanlı büyük ve güçlü bir devletti', 100);
 }
 
 test();
