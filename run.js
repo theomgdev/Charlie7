@@ -41,17 +41,21 @@ function train(text, tokenTree = {}) {
 
 function next(tokenTree, text, limit = 5) {
     let tokens = text.tokenize();
-    let lastToken = tokens[tokens.length - 1];
-
-    if (!tokenTree[lastToken]) {
-        return [];
-    }
 
     let suggestions = {};
 
-    for (let token in tokenTree[lastToken]) {
-        suggestions[token] = suggestions[token] || 0;
-        suggestions[token] += tokenTree[lastToken][token];
+    for (let src = 0; src < tokens.length - 1; src++) {
+        const srcToken = tokens[src];
+        const dist = tokens.length - src;
+
+        if (!tokenTree[srcToken] || !tokenTree[srcToken][dist]) {
+            continue;
+        }
+
+        for (const [destToken, prob] of Object.entries(tokenTree[srcToken][dist])) {
+            suggestions[destToken] = suggestions[destToken] || 0;
+            suggestions[destToken] += prob;
+        }
     }
 
     suggestions = Object.keys(suggestions).sort((a, b) => {
@@ -90,11 +94,13 @@ function complete(tokenTree, text, length = 100) {
 
 function test() {
     let data = fs.readFileSync('movie_lines.txt').toString();
-    let tree = train("Benim adım Cahit. Benim adım halit değil.");
+    let tree = train(data);
 
     console.log(tree);
 
-    //complete(tree, 'well what', 100);
+    console.log(next(tree, 'what', 5));
+
+    complete(tree, 'well what', 100);
 }
 
 test();
