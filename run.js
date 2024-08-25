@@ -67,7 +67,7 @@ function next(tokenTree, text, limit = 5) {
 
         for (const [destToken, prob] of Object.entries(tokenTree[srcToken][dist])) {
             suggestions[destToken] = suggestions[destToken] || 0;
-            suggestions[destToken] = (suggestions[destToken] + prob) / 2;
+            suggestions[destToken] +=  prob;
         }
     }
 
