@@ -107,9 +107,9 @@ function test() {
     let data = fs.readFileSync('DATA/ottoman_wikipedia.txt').toString();
     let tree = train(data);
 
-    console.log(next(tree, 'Well I don\'t want to talk about it', 5));
+    console.log(next(tree, 'http', 5));
 
-    complete(tree, 'Well I don\'t want to talk about it', 100);
+    complete(tree, 'http', 100);
 }
 
 test();
