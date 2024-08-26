@@ -27,6 +27,15 @@ class Charlie7 {
     }
 
     /**
+     * Detokenize an array of tokens
+     * @param {string[]} tokens - Array of tokens
+     * @returns {string} Detokenized string
+     */
+    detokenize(tokens) {
+        return Array.isArray(tokens) ? tokens.join('') : tokens;
+    }
+
+    /**
      * Log debug messages
      * @param {string} message - Message to log
      * @param {boolean} inline - Whether to log inline
@@ -125,7 +134,7 @@ class Charlie7 {
             if (nextTokens.length === 0) break;
 
             const selectIdx = random ? Math.floor(Math.random() * nextTokens.length) : 0;
-            const nextToken = nextTokens[selectIdx];
+            const nextToken = this.detokenize(nextTokens[selectIdx]);
 
             this.debugLog(nextToken, true);
             text += nextToken;
@@ -168,7 +177,7 @@ class TextGenerator extends Charlie7 {
      * @returns {string} Generated text
      */
     generate(length = 100, random = false, limit = 5) {
-        let seed = (Math.random() + 1).toString(36).substring(this.tokenLength);
+        let seed = (Math.random() + 1).toString(36).substring(7, 7 + this.tokenLength);
 
         return this.complete(seed, length, limit, random);
     }
