@@ -11,6 +11,7 @@ class Charlie7 {
      * @param {boolean} options.debug - Enable debug mode
      */
     constructor(options = {}) {
+        this.tokenizer = options.tokenizer || 'split';
         this.tokenLength = options.tokenLength || 2;
         this.context = options.context || 100;
         this.debug = options.debug || false;
@@ -23,7 +24,15 @@ class Charlie7 {
      * @returns {string[]} Array of tokens
      */
     tokenize(str) {
-        return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'g')) || [];
+        switch (this.tokenizer) {
+            case 'split':
+                return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
+            case 'word':
+                const wordCharset = 'a-zA-Z0-9ğüşıöçĞÜŞİÖÇ';
+                return str.match(new RegExp(`[${wordCharset}]{1,${this.tokenLength}}`, 'gs')) || [];
+            default:
+                return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
+        }
     }
 
     /**
@@ -32,7 +41,14 @@ class Charlie7 {
      * @returns {string} Detokenized string
      */
     detokenize(tokens) {
-        return Array.isArray(tokens) ? tokens.join('') : tokens;
+        switch (this.tokenizer) {
+            case 'split':
+                return Array.isArray(tokens) ? tokens.join('') : tokens;
+            case 'word':
+                return Array.isArray(tokens) ? tokens.join(' ') : (typeof tokens === 'string' ? tokens + ' ' : tokens);
+            default:
+                return Array.isArray(tokens) ? tokens.join('') : tokens;
+        }
     }
 
     /**
@@ -186,15 +202,16 @@ class TextGenerator extends Charlie7 {
 // Example usage
 function test() {
     const generator = new TextGenerator({
-        tokenLength: 2,
-        context: 10,
+        tokenizer: 'word',
+        tokenLength: 2000,
+        context: 100,
         debug: true
     });
 
     generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
-    console.log(generator.next('turkey'));
-    generator.complete('turkey', 100);
+    console.log(generator.next('turkish'));
+    generator.complete('turkish ', 100);
     generator.generate();
 }
 
