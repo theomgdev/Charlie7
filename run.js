@@ -25,11 +25,6 @@ class Charlie7 {
      */
     tokenize(str) {
         switch (this.tokenizer) {
-            case 'split':
-                return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
-            case 'word':
-                const wordCharset = 'a-zA-Z0-9ğüşıöçĞÜŞİÖÇ';
-                return str.match(new RegExp(`[${wordCharset}]{1,${this.tokenLength}}`, 'gs')) || [];
             default:
                 return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
         }
@@ -42,10 +37,6 @@ class Charlie7 {
      */
     detokenize(tokens) {
         switch (this.tokenizer) {
-            case 'split':
-                return Array.isArray(tokens) ? tokens.join('') : tokens;
-            case 'word':
-                return Array.isArray(tokens) ? tokens.join(' ') : (typeof tokens === 'string' ? tokens + ' ' : tokens);
             default:
                 return Array.isArray(tokens) ? tokens.join('') : tokens;
         }
@@ -202,8 +193,8 @@ class TextGenerator extends Charlie7 {
 // Example usage
 function test() {
     const generator = new TextGenerator({
-        tokenizer: 'word',
-        tokenLength: 2000,
+        tokenizer: 'split',
+        tokenLength: 2,
         context: 100,
         debug: true
     });
