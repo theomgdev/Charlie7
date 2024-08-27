@@ -188,12 +188,12 @@ class TextGenerator extends Charlie7 {
 
             if (lineCount % 1000 === 0) {
                 this.train(chunk);
-                this.debugLog(`\nTrained for total ${lineCount} lines...`);
+                this.debugLog(`Trained for total ${lineCount} lines...`);
                 chunk = '';
             }
         }
 
-        this.debugLog(`\nTrained for total ${lineCount} lines.`);
+        this.debugLog(`Trained for total ${lineCount} lines.`);
 
         if (chunk) {
             this.train(chunk);
