@@ -29,8 +29,8 @@ class Charlie7 {
         text = text.replace(/https?:\/\/.*?(\s|$)/g, '');
         // Remove all tags
         text = text.replace(/<.*?>/g, '');
-        // Remove all special characters except Latin and Turkish chars and numbers
-        text = text.replace(/[^A-Za-z0-9ÇçĞğİıÖöŞşÜü\s]/g, '');
+        // Remove all special characters except Latin and Turkish chars
+        text = text.replace(/[^A-Za-zÇçĞğİıÖöŞşÜü\s]/g, '');
         // Remove all newlines
         text = text.replace(/\n/g, ' ');
         // Remove all extra whitespaces
@@ -241,17 +241,17 @@ class TextGenerator extends Charlie7 {
 // Example usage
 async function test() {
     const generator = new TextGenerator({
-        tokenizer: 'word',
-        tokenLength: 1000,
-        context: 110,
+        tokenizer: 'split',
+        tokenLength: 6,
+        context: 100,
         debug: true
     });
 
     await generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
     console.log(generator.next('Türkler'));
-    generator.complete('Türkler ', 1000, true);
-    generator.generate(1000, true);
+    generator.complete('Türkler ', 1000);
+    generator.generate(1000);
 }
 
 test();
