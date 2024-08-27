@@ -60,19 +60,6 @@ class Charlie7 {
     }
 
     /**
-     * Display debug progress bar
-     * @param {number} current - Current progress
-     * @param {number} total - Total steps
-     */
-    debugProgressBar(current, total) {
-        if (this.debug) {
-            process.stdout.clearLine();
-            process.stdout.cursorTo(0);
-            process.stdout.write(`Progress: ${current}/${total} (${Math.round((current / total) * 100)}%)`);
-        }
-    }
-
-    /**
      * Train the Unique Charlie7 model
      * @param {string} text - Input text for training
      */
@@ -104,8 +91,6 @@ class Charlie7 {
 
                 distMap.set(destToken, distMap.get(destToken) + 0.000001);
             }
-
-            this.debugProgressBar(src, tokens.length - 1);
         }
     }
 
@@ -186,6 +171,8 @@ class TextGenerator extends Charlie7 {
      * Load and train the model
      */
     async loadAndTrain(path) {
+        this.debugLog("Loading and training model...");
+
         const fileStream = fs.createReadStream(path);
         const rl = readline.createInterface({
             input: fileStream,
@@ -201,15 +188,18 @@ class TextGenerator extends Charlie7 {
 
             if (lineCount % 1000 === 0) {
                 this.train(chunk);
+                this.debugLog(`\nTrained for total ${lineCount} lines...`);
                 chunk = '';
             }
         }
+
+        this.debugLog(`\nTrained for total ${lineCount} lines.`);
 
         if (chunk) {
             this.train(chunk);
         }
 
-        console.log("Model trained successfully.");
+        this.debugLog("\nModel trained successfully.");
     }
 
     /**
