@@ -1,4 +1,6 @@
 const fs = require('fs');
+const readline = require('readline');
+const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
 /**
  * Charlie7 class for text generation using Unique Charlie7 algorithm
@@ -15,7 +17,7 @@ class Charlie7 {
         this.tokenLength = options.tokenLength || 2;
         this.context = options.context || 100;
         this.debug = options.debug || false;
-        this.tokenTree = {};
+        this.tokenTree = new Map();
     }
 
     /**
@@ -80,23 +82,27 @@ class Charlie7 {
         for (let src = 0; src < tokens.length - 1; src++) {
             const srcToken = tokens[src];
 
-            if (!this.tokenTree[srcToken]) {
-                this.tokenTree[srcToken] = {};
+            if (!this.tokenTree.has(srcToken)) {
+                this.tokenTree.set(srcToken, new Map());
             }
+
+            const srcMap = this.tokenTree.get(srcToken);
 
             for (let dest = src + 1; dest < tokens.length && (this.context === -1 || dest - src <= this.context); dest++) {
                 const destToken = tokens[dest];
                 const dist = dest - src;
 
-                if (!this.tokenTree[srcToken][dist]) {
-                    this.tokenTree[srcToken][dist] = {};
+                if (!srcMap.has(dist)) {
+                    srcMap.set(dist, new Map());
                 }
 
-                if (!this.tokenTree[srcToken][dist][destToken]) {
-                    this.tokenTree[srcToken][dist][destToken] = 0;
+                const distMap = srcMap.get(dist);
+
+                if (!distMap.has(destToken)) {
+                    distMap.set(destToken, 0);
                 }
 
-                this.tokenTree[srcToken][dist][destToken] += 0.000001;
+                distMap.set(destToken, distMap.get(destToken) + 0.000001);
             }
 
             this.debugProgressBar(src, tokens.length - 1);
@@ -111,24 +117,26 @@ class Charlie7 {
      */
     next(text, limit = 5) {
         const tokens = this.tokenize(text);
-        const suggestions = {};
+        const suggestions = new Map();
 
         for (let src = 0; src < tokens.length; src++) {
             const srcToken = tokens[src];
             const dist = tokens.length - src;
 
-            if (this.tokenTree[srcToken] && this.tokenTree[srcToken][dist]) {
-                for (const [destToken, prob] of Object.entries(this.tokenTree[srcToken][dist])) {
-                    if (!suggestions[destToken]) {
-                        suggestions[destToken] = 0;
+            if (this.tokenTree.has(srcToken) && this.tokenTree.get(srcToken).has(dist)) {
+                const distMap = this.tokenTree.get(srcToken).get(dist);
+
+                for (const [destToken, prob] of distMap.entries()) {
+                    if (!suggestions.has(destToken)) {
+                        suggestions.set(destToken, 0);
                     }
 
-                    suggestions[destToken] += prob;
+                    suggestions.set(destToken, suggestions.get(destToken) + prob);
                 }
             }
         }
 
-        return Object.entries(suggestions)
+        return Array.from(suggestions.entries())
             .sort(([, a], [, b]) => b - a)
             .slice(0, limit)
             .map(([token]) => token);
@@ -177,14 +185,31 @@ class TextGenerator extends Charlie7 {
     /**
      * Load and train the model
      */
-    loadAndTrain(path) {
-        try {
-            const data = fs.readFileSync(path, 'utf8');
-            this.train(data);
-            console.log("Model trained successfully.");
-        } catch (error) {
-            console.error("Error loading or training the model:", error.message);
+    async loadAndTrain(path) {
+        const fileStream = fs.createReadStream(path);
+        const rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+        });
+
+        let chunk = '';
+        let lineCount = 0;
+
+        for await (const line of rl) {
+            chunk += line + '\n';
+            lineCount++;
+
+            if (lineCount % 1000 === 0) {
+                this.train(chunk);
+                chunk = '';
+            }
         }
+
+        if (chunk) {
+            this.train(chunk);
+        }
+
+        console.log("Model trained successfully.");
     }
 
     /**
@@ -200,7 +225,7 @@ class TextGenerator extends Charlie7 {
 }
 
 // Example usage
-function test() {
+async function test() {
     const generator = new TextGenerator({
         tokenizer: 'split',
         tokenLength: 2,
@@ -208,7 +233,7 @@ function test() {
         debug: true
     });
 
-    generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
+    await generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
     console.log(generator.next('turkish'));
     generator.complete('turkish ', 100);
