@@ -130,11 +130,11 @@ class Charlie7 {
      * Complete the given text
      * @param {string} text - Input text to complete
      * @param {number} length - Desired completion length
-     * @param {number} limit - Limit of suggestions for each step
+     * @param {number} limit - Limit of suggestions for each step (unnecessary if not random)
      * @param {boolean} random - Whether to choose random suggestions
      * @returns {string} Completed text
      */
-    complete(text, length = 100, limit = 5, random = false) {
+    complete(text, length = 100, random = false, limit = 5) {
         this.debugLog("[START OF COMPLETION]");
         this.debugLog(text, true);
 
