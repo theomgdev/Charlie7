@@ -46,6 +46,8 @@ class Charlie7 {
     tokenize(str) {
         str = this.preprocess(str);
         switch (this.tokenizer) {
+            case 'word':
+                return str.match(new RegExp(`\\S{1,${this.tokenLength}}`, 'gs')) || [];
             default:
                 return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
         }
@@ -58,6 +60,8 @@ class Charlie7 {
      */
     detokenize(tokens) {
         switch (this.tokenizer) {
+            case 'word':
+                return Array.isArray(tokens) ? tokens.join(' ') : tokens + ' ';
             default:
                 return Array.isArray(tokens) ? tokens.join('') : tokens;
         }
@@ -237,8 +241,8 @@ class TextGenerator extends Charlie7 {
 // Example usage
 async function test() {
     const generator = new TextGenerator({
-        tokenizer: 'split',
-        tokenLength: 6,
+        tokenizer: 'word',
+        tokenLength: 1000,
         context: 110,
         debug: true
     });
@@ -246,8 +250,8 @@ async function test() {
     await generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
     console.log(generator.next('Türkler'));
-    generator.complete('Türkler ', 1000);
-    generator.generate();
+    generator.complete('Türkler ', 1000, true);
+    generator.generate(1000, true);
 }
 
 test();
