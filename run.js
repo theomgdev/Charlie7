@@ -19,12 +19,32 @@ class Charlie7 {
         this.tokenTree = new Map();
     }
 
+    preprocess(text) {
+        // Remove all Wikipedia references
+        text = text.replace(/\[\d+\]/g, '');
+        text = text.replace(/<ref>.*?<\/ref>/g, '');
+        // Remove all links
+        text = text.replace(/\[\[.*?\]\]/g, '');
+        // Remove all websites
+        text = text.replace(/https?:\/\/.*?(\s|$)/g, '');
+        // Remove all tags
+        text = text.replace(/<.*?>/g, '');
+        // Remove all special characters except Latin and Turkish chars and numbers
+        text = text.replace(/[^A-Za-z0-9ÇçĞğİıÖöŞşÜü\s]/g, '');
+        // Remove all newlines
+        text = text.replace(/\n/g, ' ');
+        // Remove all extra whitespaces
+        text = text.replace(/\s+/g, ' ');
+        return text;
+    }
+
     /**
      * Tokenize a string
      * @param {string} str - String to tokenize
      * @returns {string[]} Array of tokens
      */
     tokenize(str) {
+        str = this.preprocess(str);
         switch (this.tokenizer) {
             default:
                 return str.match(new RegExp(`.{1,${this.tokenLength}}`, 'gs')) || [];
@@ -135,6 +155,7 @@ class Charlie7 {
      * @returns {string} Completed text
      */
     complete(text, length = 100, random = false, limit = 5) {
+        text = this.preprocess(text);
         this.debugLog("[START OF COMPLETION]");
         this.debugLog(text, true);
 
@@ -217,15 +238,15 @@ class TextGenerator extends Charlie7 {
 async function test() {
     const generator = new TextGenerator({
         tokenizer: 'split',
-        tokenLength: 2,
-        context: 100,
+        tokenLength: 6,
+        context: 110,
         debug: true
     });
 
     await generator.loadAndTrain('DATA/ottoman_wikipedia.txt');
 
-    console.log(generator.next('turkish'));
-    generator.complete('turkish ', 100);
+    console.log(generator.next('Türkler'));
+    generator.complete('Türkler ', 1000);
     generator.generate();
 }
 
