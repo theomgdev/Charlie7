@@ -88,8 +88,15 @@ class Charlie7 {
                 const destToken = tokens[dest];
                 const dist = dest - src;
 
-                this.tokenTree[srcToken][dist] = this.tokenTree[srcToken][dist] || {};
-                this.tokenTree[srcToken][dist][destToken] = (this.tokenTree[srcToken][dist][destToken] || 0) + 0.000001;
+                if (!this.tokenTree[srcToken][dist]) {
+                    this.tokenTree[srcToken][dist] = {};
+                }
+
+                if (!this.tokenTree[srcToken][dist][destToken]) {
+                    this.tokenTree[srcToken][dist][destToken] = 0;
+                }
+
+                this.tokenTree[srcToken][dist][destToken] += 0.000001;
             }
 
             this.debugProgressBar(src, tokens.length - 1);
@@ -112,7 +119,11 @@ class Charlie7 {
 
             if (this.tokenTree[srcToken] && this.tokenTree[srcToken][dist]) {
                 for (const [destToken, prob] of Object.entries(this.tokenTree[srcToken][dist])) {
-                    suggestions[destToken] = (suggestions[destToken] || 0) + prob;
+                    if (!suggestions[destToken]) {
+                        suggestions[destToken] = 0;
+                    }
+
+                    suggestions[destToken] += prob;
                 }
             }
         }
@@ -167,9 +178,8 @@ class TextGenerator extends Charlie7 {
      * Load and train the model
      */
     loadAndTrain(path) {
-        let data = fs.readFileSync(path, 'utf8');
-
         try {
+            const data = fs.readFileSync(path, 'utf8');
             this.train(data);
             console.log("Model trained successfully.");
         } catch (error) {
@@ -184,8 +194,7 @@ class TextGenerator extends Charlie7 {
      * @returns {string} Generated text
      */
     generate(length = 100, random = false, limit = 5) {
-        let seed = (Math.random() + 1).toString(36).substring(7, 7 + this.tokenLength);
-
+        const seed = (Math.random() + 1).toString(36).substring(7, 7 + this.tokenLength);
         return this.complete(seed, length, limit, random);
     }
 }
