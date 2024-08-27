@@ -199,7 +199,7 @@ class TextGenerator extends Charlie7 {
             this.train(chunk);
         }
 
-        this.debugLog("\nModel trained successfully.");
+        this.debugLog("Model trained successfully.");
     }
 
     /**
