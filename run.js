@@ -1,6 +1,5 @@
 const fs = require('fs');
 const readline = require('readline');
-const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
 /**
  * Charlie7 class for text generation using Unique Charlie7 algorithm
